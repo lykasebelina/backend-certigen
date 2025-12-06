@@ -1,6 +1,6 @@
-//backend/server/server.js
+// backend/server/server.js
 const express = require("express");
-const fetch = require("node-fetch"); // npm install node-fetch
+const fetch = require("node-fetch");
 const cors = require("cors");
 
 
@@ -8,12 +8,28 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 
-// Enable CORS for localhost:5173 (your frontend)
+// --- CORS Configuration Update ---
+const ALLOWED_ORIGINS = [
+  "https://navajowhite-beaver-664626.hostingersite.com", // Your Live Hostinger Site
+  "http://localhost:5173",                               // Your Local Development
+];
+
+// Enable CORS for multiple origins
 app.use(
- cors({
-   origin: "http://localhost:5173", // adjust to your frontend origin
- })
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'), false);
+      }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // You may need this if you use cookies or auth headers
+  })
 );
+// ---------------------------------
 
 
 // Proxy endpoint
@@ -46,5 +62,3 @@ app.get("/api/proxy-image", async (req, res) => {
 app.listen(PORT, () => {
  console.log(`Proxy server running at http://localhost:${PORT}`);
 });
-
-
