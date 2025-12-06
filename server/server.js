@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 4000;
 
 // --- CORS Configuration Update ---
 const ALLOWED_ORIGINS = [
-  "https://navajowhite-beaver-664626.hostingersite.com", // Your Live Hostinger Site
+  "https://certigen.site", // Your Live Hostinger Site
   "http://localhost:5173",                               // Your Local Development
 ];
 
