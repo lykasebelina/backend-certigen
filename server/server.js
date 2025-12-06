@@ -33,7 +33,7 @@ app.use(
 
 
 // Proxy endpoint
-app.get("/api/proxy-image", async (req, res) => {
+app.post("/api/extract", async (req, res) => {
  const { url } = req.query;
  if (!url) return res.status(400).send("Missing url query param");
 
