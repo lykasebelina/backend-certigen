@@ -55,9 +55,9 @@ app.post("/api/extract", async (req, res) => {
    
    // --- CRITICAL FIX FOR 400 ERROR ---
    // Check if prompt is missing, not a string, or is empty/whitespace only
-   if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
-     return res.status(400).json({ error: "No valid prompt provided" });
-   }
+   //if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
+   //  return res.status(400).json({ error: "No valid prompt provided" });
+  // }
    // ----------------------------------
 
 
