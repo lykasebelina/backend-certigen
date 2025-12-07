@@ -2,28 +2,63 @@ import express from "express";
 import cors from "cors";
 import OpenAI from "openai";
 import dotenv from "dotenv";
+import fetch from "node-fetch"; // Make sure node-fetch is still needed and installed if using ES Modules
 
+// Since you were originally using require, I'll keep the module style consistent with that:
+// const express = require("express");
+// const cors = require("cors");
+// const OpenAI = require("openai");
+// const dotenv = require("dotenv");
+// const fetch = require("node-fetch"); // Or remove if not needed for the proxy, but looks necessary
 
 dotenv.config();
 
-
 const app = express();
-app.use(cors());
+// const PORT = process.env.PORT || 4000; // Removed as it's defined at the bottom
+
+// --- CORS Configuration (Option 2 - Robust) ---
+const ALLOWED_ORIGINS = [
+  "https://lawngreen-fish-109745.hostingersite.com", // Your Live Hostinger Site (Current)
+  "https://navajowhite-beaver-664626.hostingersite.com", // Your Live Hostinger Site (Previous, kept for safety)
+  "http://localhost:5173",                               // Your Local Development
+];
+
+// Enable CORS for multiple origins
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'), false);
+      }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  })
+);
+// ---------------------------------------------
+
+
 app.use(express.json());
-
-
-
 
 const client = new OpenAI({
  apiKey: process.env.OPENAI_API_KEY, // safe on server
 });
 
 
-// API endpoint: POST /extract
+// API endpoint: POST /api/extract
 app.post("/api/extract", async (req, res) => {
  try {
    const { prompt } = req.body;
-   if (!prompt) return res.status(400).json({ error: "No prompt provided" });
+   
+   // --- CRITICAL FIX FOR 400 ERROR ---
+   // Check if prompt is missing, not a string, or is empty/whitespace only
+   if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
+     return res.status(400).json({ error: "No valid prompt provided" });
+   }
+   // ----------------------------------
 
 
    const response = await client.responses.create({
@@ -267,10 +302,33 @@ Raw Text:
 });
 
 
+// Proxy endpoint (original path, preserved)
+app.get("/api/proxy-image", async (req, res) => {
+ const { url } = req.query;
+ if (!url) return res.status(400).send("Missing url query param");
+
+
+ try {
+   // Fetch the DALL·E private image
+   const response = await fetch(url);
+   if (!response.ok) throw new Error(`Failed to fetch image: ${response.statusText}`);
+   const buffer = await response.arrayBuffer();
+
+
+   // Infer content type from response headers or fallback to png
+   const contentType = response.headers.get("content-type") || "image/png";
+   res.set("Content-Type", contentType);
+
+
+   // Send the image buffer to frontend
+   res.send(Buffer.from(buffer));
+ } catch (err) {
+   console.error("Proxy error:", err);
+   res.status(500).send("Failed to fetch image");
+ }
+});
 
 
 // Start server
 const port = process.env.PORT || 4000;
 app.listen(port, () => console.log(`AI extractor server running on port ${port}`));
-
-
