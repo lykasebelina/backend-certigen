@@ -18,8 +18,7 @@ const app = express();
 
 // --- CORS Configuration (Option 2 - Robust) ---
 const ALLOWED_ORIGINS = [
-  "https://lawngreen-fish-109745.hostingersite.com", // Your Live Hostinger Site (Current)
-  "https://navajowhite-beaver-664626.hostingersite.com", // Your Live Hostinger Site (Previous, kept for safety)
+  " https://certigen.site", // Your Live Hostinger Site
   "http://localhost:5173",                               // Your Local Development
 ];
 
@@ -55,9 +54,9 @@ app.post("/api/extract", async (req, res) => {
    
    // --- CRITICAL FIX FOR 400 ERROR ---
    // Check if prompt is missing, not a string, or is empty/whitespace only
-   //if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
-   //  return res.status(400).json({ error: "No valid prompt provided" });
-  // }
+   if (!prompt || typeof prompt !== 'string' || prompt.trim().length === 0) {
+   return res.status(400).json({ error: "No valid prompt provided" });
+  }
    // ----------------------------------
 
 
