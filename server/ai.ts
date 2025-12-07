@@ -20,7 +20,7 @@ const client = new OpenAI({
 
 
 // API endpoint: POST /extract
-app.post("/extract", async (req, res) => {
+app.post("/api/extract", async (req, res) => {
  try {
    const { prompt } = req.body;
    if (!prompt) return res.status(400).json({ error: "No prompt provided" });
@@ -185,7 +185,7 @@ parsed.openingPhrase = "This";
 
 
 // API endpoint: POST /rephrase
-app.post("/rephrase", async (req, res) => {
+app.post("/api/rephrase", async (req, res) => {
  try {
    const { text, maxChars, guidance } = req.body;
    if (!text) return res.status(400).json({ error: "No text provided" });
@@ -230,7 +230,7 @@ Return only the shortened text (no markdown, no explanation).
 
 
 // ⭐️ NEW AI ENDPOINT: POST /extract-date ⭐️
-app.post("/extract-date", async (req, res) => {
+app.post("/api/extract-date", async (req, res) => {
  try {
    const { rawText } = req.body;
    if (!rawText) return res.status(400).json({ error: "No rawText provided" });
